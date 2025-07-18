@@ -737,6 +737,17 @@
 					display: none;
 				}
 			}
+
+			.footer-signature {
+				width: 100%;
+				text-align: center;
+				margin-top: 48px;
+				margin-bottom: 16px;
+				color: #130909;
+				font-size: 1rem;
+				opacity: 0.7;
+				font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+			}
 		</style>
 	</head>
 	<body>
@@ -811,8 +822,15 @@
 						Сбросить тест
 					</button>
 				</div>
+			
+				
+				<br>
+				<address style="text-align: center; font-size: 0.875rem; color: #130909; opacity: 0.6;">
+					© 2025 Сизько Станислав
+					
+				<hr> 
+				</address>
 			</div>
-
 			<div id="examScreen" class="exam-section">
 				<button class="back-btn" onclick="backToMain()">← Назад</button>
 
@@ -958,6 +976,10 @@
 					{
 						type: 'Вопрос',
 						text: 'Из чего складывается итоговый процент риелтора? Расскажите поэтапно и покажите где это посмотреть наглядно.',
+					},
+					{
+						type: 'Вопрос',
+						text: "что такое майн таск? Как он работает и для чего нужен? Как его использовать в своей работе? Продемонстрируйте.",
 					},
 					{
 						type: 'Вопрос',
@@ -1268,7 +1290,6 @@
 					showFinalResults()
 				}
 			}
-
 			function downloadDayResults() {
 				// Фильтруем ответы только для текущего дня
 				const dayAnswers = answersLog.filter(entry => entry.day === currentDay)
