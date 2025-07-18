@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<hg="ru">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -666,7 +666,7 @@
           alt="Логотип компании"
           class="logo"
         />
-        🏆 Финальное тестирование
+         Финальное тестирование
       </h1>
 
       <div class="progress-section">
@@ -691,8 +691,12 @@
             <div class="stat-label">Правильных ответов</div>
           </div>
           <div class="stat-item">
+            <div class="stat-number" id="incorrectAnswers">0</div>
+            <div class="stat-label">Неправильных ответов</div>
+          </div>
+          <div class="stat-item">
             <div class="stat-number" id="successRate">0%</div>
-            <div class="stat-label">Процент успеха</div>
+            <div class="stat-label">Пройдено</div>
           </div>
         </div>
       </div>
@@ -896,6 +900,7 @@
       let correctAnswers = parseInt(
         localStorage.getItem("correctAnswers") || "0"
       );
+      let incorrectAnswers = parseInt(localStorage.getItem("incorrectAnswers") || "0");
       let currentDayCorrect = 0;
       let currentDayTotal = 0;
       let isQuestionEvaluated = false;
@@ -925,10 +930,10 @@
       }
 
       function updateStats() {
-        document.getElementById("completedDays").textContent =
-          completedDays.length;
+        document.getElementById("completedDays").textContent = completedDays.length;
         document.getElementById("totalQuestions").textContent = totalAnswered;
         document.getElementById("correctAnswers").textContent = correctAnswers;
+        document.getElementById("incorrectAnswers").textContent = incorrectAnswers;
         document.getElementById("successRate").textContent =
           totalAnswered > 0
             ? Math.round((correctAnswers / totalAnswered) * 100) + "%"
@@ -1039,7 +1044,6 @@
         const dayQuestions = questions[currentDay];
         const question = dayQuestions[currentQuestionIndex];
 
-        // Логируем ответ
         answersLog.push({
           day: currentDay,
           question: question.text,
@@ -1047,7 +1051,6 @@
           timestamp: new Date().toISOString()
         });
 
-        // Сохраняем в localStorage
         localStorage.setItem("answersLog", JSON.stringify(answersLog));
 
         const resultDiv = document.getElementById("evaluationResult");
@@ -1057,18 +1060,20 @@
           resultDiv.textContent = "✅ Ответ засчитан как правильный";
           resultDiv.className = "evaluation-result result-correct";
         } else {
+          incorrectAnswers++;
           resultDiv.textContent = "❌ Ответ засчитан как неправильный";
           resultDiv.className = "evaluation-result result-incorrect";
         }
         resultDiv.style.display = "block";
 
-        // Активируем кнопки
         document.getElementById("nextBtn").disabled = false;
         document.getElementById("completeBtn").disabled = false;
 
-        // Сохраняем статистику
         localStorage.setItem("totalAnswered", totalAnswered.toString());
         localStorage.setItem("correctAnswers", correctAnswers.toString());
+        localStorage.setItem("incorrectAnswers", incorrectAnswers.toString());
+
+        updateStats();
       }
 
       function completeDay() {
@@ -1341,7 +1346,7 @@
               Завершено дней: <b>${completedDays.length}/5</b><br>
               Всего вопросов: <b>${totalAnswered}</b><br>
               Правильных ответов: <b>${correctAnswers}</b><br>
-              Процент успеха: <b>${percent}%</b>
+              Пройдено: <b>${percent}%</b>
             </div>
             <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
               <button class="btn btn-primary" onclick="downloadAllResults()">Скачать все результаты</button>
