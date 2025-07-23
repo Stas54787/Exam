@@ -443,6 +443,27 @@
 				box-shadow: 0 8px 20px rgba(19, 9, 9, 0.4);
 			}
 
+			.btn-floating {
+				background: #00bfff;
+				color: #fff;
+				padding: clamp(10px, 2.5vw, 12px) clamp(16px, 4vw, 24px);
+				border: none;
+				border-radius: clamp(8px, 2vw, 12px);
+				cursor: pointer;
+				font-size: clamp(0.875rem, 2.5vw, 1rem);
+				font-weight: 600;
+				min-width: clamp(120px, 25vw, 140px);
+				box-shadow: 0 4px 12px rgba(0, 191, 255, 0.3);
+				transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+				position: relative;
+				overflow: hidden;
+			}
+			.btn-floating:hover {
+				background: #0077b6;
+				transform: translateY(-2px);
+				box-shadow: 0 8px 20px rgba(0, 191, 255, 0.4);
+			}
+
 			.evaluation-result {
 				display: none;
 				padding: clamp(12px, 3vw, 16px);
@@ -822,13 +843,19 @@
 						Сбросить тест
 					</button>
 				</div>
-			
-				
-				<br>
-				<address style="text-align: center; font-size: 0.875rem; color: #130909; opacity: 0.6;">
+
+				<br />
+				<address
+					style="
+						text-align: center;
+						font-size: 0.875rem;
+						color: #130909;
+						opacity: 0.6;
+					"
+				>
 					© 2025 Сизько Станислав
-					
-				<hr> 
+
+					<hr />
 				</address>
 			</div>
 			<div id="examScreen" class="exam-section">
@@ -979,7 +1006,7 @@
 					},
 					{
 						type: 'Вопрос',
-						text: "что такое майн таск? Как он работает и для чего нужен? Как его использовать в своей работе? Продемонстрируйте.",
+						text: 'что такое майн таск? Как он работает и для чего нужен? Как его использовать в своей работе? Продемонстрируйте.',
 					},
 					{
 						type: 'Вопрос',
@@ -1151,6 +1178,19 @@
 				document.getElementById('evaluatorSection').style.display = 'block'
 				document.getElementById('evaluationResult').style.display = 'none'
 
+				// Вставляем новую кнопку "Плавает"
+				document.querySelector('.evaluation-buttons').innerHTML = `
+        <button class="btn-correct" onclick="evaluateAnswer(true)">
+            ✅ Правильно
+        </button>
+        <button class="btn-floating" onclick="floatingAction()">
+            🌊 Плавает
+        </button>
+        <button class="btn-incorrect" onclick="evaluateAnswer(false)">
+            ❌ Неправильно
+        </button>
+    `
+
 				// Сбрасываем состояние оценки
 				isQuestionEvaluated = false
 
@@ -1185,8 +1225,8 @@
 				if (isQuestionEvaluated) return
 
 				isQuestionEvaluated = true
-				currentDayAnswered++ // Увеличиваем счетчик вопросов в дне
-				totalAnswered++ // Общий счетчик всех вопросов
+				currentDayAnswered++
+				totalAnswered++
 
 				const dayQuestions = questions[currentDay]
 				const question = dayQuestions[currentQuestionIndex]
@@ -1194,35 +1234,43 @@
 				answersLog.push({
 					day: currentDay,
 					question: question.text,
-					result: isCorrect ? 'Правильно' : 'Неправильно',
+					result:
+						isCorrect === null
+							? 'Плавает'
+							: isCorrect
+							? 'Правильно'
+							: 'Неправильно',
 					timestamp: new Date().toISOString(),
 				})
 
 				localStorage.setItem('answersLog', JSON.stringify(answersLog))
 
 				const resultDiv = document.getElementById('evaluationResult')
-				if (isCorrect) {
-					currentDayCorrectCount++ // Правильный ответ в дне
-					correctAnswers++ // Общий счетчик правильных
+				if (isCorrect === null) {
+					resultDiv.textContent = '🌊 Ответ отмечен как "Плавает"'
+					resultDiv.className = 'evaluation-result'
+				} else if (isCorrect) {
+					currentDayCorrectCount++
+					correctAnswers++
 					resultDiv.textContent = '✅ Ответ засчитан как правильный'
 					resultDiv.className = 'evaluation-result result-correct'
 				} else {
-					currentDayIncorrectCount++ // Неправильный ответ в дне
-					incorrectAnswers++ // Общий счетчик неправильных
+					currentDayIncorrectCount++
+					incorrectAnswers++
 					resultDiv.textContent = '❌ Ответ засчитан как неправильный'
 					resultDiv.className = 'evaluation-result result-incorrect'
 				}
 				resultDiv.style.display = 'block'
-
-				document.getElementById('nextBtn').disabled = false
-				document.getElementById('completeBtn').disabled = false
 
 				localStorage.setItem('totalAnswered', totalAnswered.toString())
 				localStorage.setItem('correctAnswers', correctAnswers.toString())
 				localStorage.setItem('incorrectAnswers', incorrectAnswers.toString())
 
 				updateStats()
-				updateProgress() // Обновляем прогресс-бар
+				updateProgress()
+
+				// Автоматический переход к следующему вопросу
+				setTimeout(nextQuestion, 400) // Можно изменить задержку по желанию
 			}
 
 			function showDayTransition(nextDay) {
@@ -1636,6 +1684,10 @@
 			document.addEventListener('DOMContentLoaded', function () {
 				initializeApp()
 			})
+
+			function floatingAction() {
+				evaluateAnswer(null) // Только оценка, переход будет автоматически
+			}
 		</script>
 	</body>
 </html>
